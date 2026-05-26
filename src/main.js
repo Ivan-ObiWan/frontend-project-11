@@ -1,7 +1,7 @@
 import './style.css';
 
 const form = document.getElementById('rss-form');
-const urlInput = document.getElementById('url-input');
+const urlInput = document.getElementById('rss-url');
 const feedsContainer = document.getElementById('feeds');
 
 let feeds = [];
@@ -31,6 +31,7 @@ const checkDuplicate = (url) => {
 
 const fetchRss = (url) => {
   return new Promise((resolve) => {
+    // Имитация загрузки
     setTimeout(() => {
       resolve({
         title: `RSS поток из ${url}`,
@@ -48,7 +49,7 @@ const showMessage = (message, isError = false) => {
   }
   
   const alert = document.createElement('div');
-  alert.className = `alert alert-${isError ? 'danger' : 'success'} alert-dismissible fade show`;
+    alert.className = `alert alert-${isError ? 'danger' : 'success'} alert-dismissible fade show mt-3`;
   alert.innerHTML = `
     ${message}
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -65,12 +66,12 @@ const showMessage = (message, isError = false) => {
 
 const renderFeed = (feed) => {
   const feedElement = document.createElement('div');
-  feedElement.className = 'card mb-3';
+  feedElement.className = 'card';
   feedElement.innerHTML = `
     <div class="card-body">
       <h5 class="card-title">${feed.title}</h5>
-      <p class="card-text text-muted">${feed.description}</p>
-      <small class="text-secondary">${feed.url}</small>
+      <p class="card-text">${feed.description}</p>
+      <small class="text-muted">${feed.url}</small>
     </div>
   `;
   feedsContainer.appendChild(feedElement);
