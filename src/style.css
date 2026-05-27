@@ -1,35 +1,31 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
-/* Тёмно-серая шапка */
 .hero-section {
   background-color: #343a40;
   padding: 3rem 0;
   margin-bottom: 2rem;
 }
 
-/* Принудительно белый цвет для заголовка и текста в шапке */
-.hero-section h1,
-.hero-section .h1,
-.hero-section h1.display-4,
-.hero-section .lead,
-.hero-section p {
-  color: #ffffff !important;
+.container {
+  max-width: 1200px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.col-md-8.col-lg-6 {
+  max-width: 600px;
 }
 
 .hero-section h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  color: #ffffff !important;
 }
 
 .hero-section .lead {
   font-size: 1.2rem;
+  color: #f8f9fa !important;
   margin-bottom: 0;
-}
-
-/* Остальные стили */
-.form-label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
 }
 
 .btn-primary {
@@ -47,6 +43,7 @@
 .form-text {
   color: #6c757d;
   font-size: 0.875rem;
+  margin-top: 0.5rem;
 }
 
 hr {

@@ -1,28 +1,41 @@
 import * as yup from 'yup';
+import i18next from 'i18next';
 
-const urlSchema = yup.string()
-  .required('Не должно быть пустым')
-  .url('Ссылка должна быть валидным URL');
+yup.setLocale({
+  mixed: {
+    required: () => i18next.t('errors.required'),
+  },
+  string: {
+    url: () => i18next.t('errors.invalidUrl'),
+  },
+});
+
+const urlSchema = () => {
+  return yup.string()
+    .required()
+    .url();
+};
 
 export const validateUrl = (url, existingFeeds) => {
   return new Promise((resolve, reject) => {
-    console.log('Validating:', url);
+    const schema = urlSchema();
     
-    urlSchema.validate(url)
+    schema.validate(url)
       .then(validUrl => {
-        console.log('Schema passed:', validUrl);
-        
-        // Проверка дубликата
         const isDuplicate = existingFeeds.some(feed => feed.url === validUrl);
         if (isDuplicate) {
-          reject(new Error('RSS уже существует'));
+          reject(new Error(i18next.t('errors.duplicate')));
         } else {
           resolve(validUrl);
         }
       })
       .catch(error => {
-        console.log('Schema error:', error.message);
         reject(error);
       });
   });
+};
+
+export const validateField = (url) => {
+  const schema = urlSchema();
+  return schema.validate(url);
 };
