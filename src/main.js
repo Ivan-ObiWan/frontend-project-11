@@ -1,4 +1,4 @@
 import './style.css';
 import { initView } from './view.js';
 
-initView();
+console.log('App started')

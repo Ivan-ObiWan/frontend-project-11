@@ -1,156 +1,78 @@
 import state from './state.js';
-import { subscribe } from 'valtio';
-import { validateField } from './validator.js';
-import { fetchRss, parseRss } from './rss.js';
+import { validateUrl } from './validator.js';
 
 const form = document.getElementById('rss-form');
 const urlInput = document.getElementById('rss-url');
-const submitButton = form.querySelector('button[type="submit"]');
 const feedsContainer = document.getElementById('feeds');
 
-const showValidationError = (error) => {
-  const existingError = document.querySelector('.invalid-feedback');
-  if (existingError) {
-    existingError.remove();
-  }
+const showError = (message) => {
+  const oldError = document.querySelector('.invalid-feedback');
+  if (oldError) oldError.remove();
   
   urlInput.classList.add('is-invalid');
-
+  
   const errorDiv = document.createElement('div');
   errorDiv.className = 'invalid-feedback';
-  errorDiv.textContent = error;
+  errorDiv.textContent = message;
   urlInput.parentNode.appendChild(errorDiv);
 };
 
-const clearValidationError = () => {
+const clearError = () => {
   urlInput.classList.remove('is-invalid');
-  const existingError = document.querySelector('.invalid-feedback');
-  if (existingError) {
-    existingError.remove();
-  }
+  const oldError = document.querySelector('.invalid-feedback');
+  if (oldError) oldError.remove();
 };
 
-const showMessage = (message, type = 'success') => {
-  const existingAlert = document.querySelector('.alert');
-  if (existingAlert) {
-    existingAlert.remove();
-  }
-  
+const showMessage = (message, isSuccess = true) => {
   const alert = document.createElement('div');
-  alert.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
-  alert.innerHTML = `
-    ${message}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  `;
-  
+  alert.className = `alert alert-${isSuccess ? 'success' : 'danger'} alert-dismissible fade show`;
+  alert.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
   form.insertAdjacentElement('afterend', alert);
-  
-  setTimeout(() => {
-    if (alert.parentNode) {
-      alert.remove();
-    }
-  }, 3000);
+  setTimeout(() => alert.remove(), 3000);
 };
 
 const renderFeed = (feed) => {
-  const feedElement = document.createElement('div');
-  feedElement.className = 'card';
-  feedElement.setAttribute('data-id', feed.id);
-  feedElement.innerHTML = `
+  const div = document.createElement('div');
+  div.className = 'card mb-2';
+  div.innerHTML = `
     <div class="card-body">
       <h5 class="card-title">${feed.title}</h5>
-      <p class="card-text">${feed.description}</p>
-      <small class="text-muted">${feed.url}</small>
+      <p class="card-text">${feed.url}</p>
     </div>
   `;
-  feedsContainer.appendChild(feedElement);
-};
-
-const renderAllFeeds = () => {
-  feedsContainer.innerHTML = '';
-  state.feeds.forEach(feed => {
-    renderFeed(feed);
-  });
-};
-
-const setupRealtimeValidation = () => {
-  urlInput.addEventListener('input', () => {
-    const url = urlInput.value.trim();
-    
-    validateField(url)
-      .then(() => {
-        clearValidationError();
-        state.form.isValid = true;
-        state.form.error = null;
-      })
-      .catch(error => {
-        showValidationError(error.message);
-        state.form.isValid = false;
-        state.form.error = error.message;
-      });
-  });
+  feedsContainer.appendChild(div);
 };
 
 const handleSubmit = (event) => {
   event.preventDefault();
   
   const url = urlInput.value.trim();
-
-  submitButton.disabled = true;
-  submitButton.textContent = 'Загрузка...';
-
-  validateField(url)
-    .then(() => {
-      const isDuplicate = state.feeds.some(feed => feed.url === url);
-      if (isDuplicate) {
-        throw new Error('RSS уже добавлен');
-      }
-      return url;
-    })
-    .then(validUrl => fetchRss(validUrl))
-    .then(rssData => parseRss(rssData))
-    .then(parsedData => {
+  
+  validateUrl(url, state.feeds)
+    .then(validUrl => {
+      clearError();
+      
       const newFeed = {
         id: Date.now(),
-        url: url,
-        title: parsedData.title,
-        description: parsedData.description,
-        addedAt: new Date()
+        url: validUrl,
+        title: 'RSS поток',
+        description: 'Описание RSS потока'
       };
       
       state.feeds.push(newFeed);
- 
+      renderFeed(newFeed);
       urlInput.value = '';
-      clearValidationError();
-
-      showMessage('RSS успешно добавлен!', 'success');
-
-      urlInput.focus();
+      showMessage('RSS успешно загружен');
     })
     .catch(error => {
-      showValidationError(error.message);
-      showMessage(`Ошибка: ${error.message}`, 'error');
-    })
-    .finally(() => {
-      submitButton.disabled = false;
-      submitButton.textContent = 'Добавить';
+      showError(error.message);
+      showMessage(error.message, false);
     });
 };
 
-const setupWatchers = () => {
-  subscribe(state, () => {
-    if (state.feeds) {
-      renderAllFeeds();
-    }
-  });
+form.addEventListener('submit', handleSubmit);
+urlInput.focus();
+
+export const initView = () => {
+  console.log('View initialized');
 };
-
-const initView = () => {
-  setupRealtimeValidation();
-  setupWatchers();
-  form.addEventListener('submit', handleSubmit);
-
-  urlInput.focus();
-};
-
-export { initView };

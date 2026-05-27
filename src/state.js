@@ -1,17 +1,10 @@
 import { proxy } from 'valtio';
 
 const state = proxy({
+  feeds: [],
   form: {
     url: '',
-    isValid: true,
-    error: null,
-    isSubmitting: false
-  },
-
-  feeds: [],
-
-  ui: {
-    focused: true
+    error: null
   }
 });
 
