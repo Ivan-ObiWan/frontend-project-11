@@ -13,7 +13,11 @@ const submitButton = document.querySelector('button[type="submit"]');
 const formText = document.querySelector('.form-text');
 const footer = document.querySelector('footer');
 
-urlInput.placeholder = 'Ссылка RSS';
+const messageContainer = document.createElement('div');
+messageContainer.className = 'message-container mt-2';
+form.insertAdjacentElement('afterend', messageContainer);
+
+urlInput.placeholder = i18next.t('form.placeholder');
 
 const showError = (message) => {
   const oldError = document.querySelector('.invalid-feedback');
@@ -33,15 +37,21 @@ const clearError = () => {
   if (oldError) oldError.remove();
 };
 
-const showMessage = (message, isSuccess = true) => {
-  const existingAlert = document.querySelector('.alert');
-  if (existingAlert) existingAlert.remove();
+const showSimpleMessage = (message, isError = false) => {
+  // Очищаем контейнер
+  messageContainer.innerHTML = '';
   
-  const alert = document.createElement('div');
-  alert.className = `alert alert-${isSuccess ? 'success' : 'danger'} alert-dismissible fade show`;
-  alert.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-  form.insertAdjacentElement('afterend', alert);
-  setTimeout(() => alert.remove(), 3000);
+  // Создаём элемент сообщения
+  const messageEl = document.createElement('div');
+  messageEl.className = isError ? 'text-danger' : 'text-success';
+  messageEl.textContent = message;
+  messageContainer.appendChild(messageEl);
+
+  setTimeout(() => {
+    if (messageEl.parentNode) {
+      messageEl.remove();
+    }
+  }, 5000);
 };
 
 const renderFeed = (feed) => {
@@ -57,7 +67,6 @@ const renderFeed = (feed) => {
 };
 
 const updateUILocales = () => {
-  // Обновляем все тексты интерфейса из i18next
   if (heroTitle) heroTitle.textContent = i18next.t('app.title');
   if (heroLead) heroLead.textContent = i18next.t('app.lead');
   if (submitButton) submitButton.textContent = i18next.t('form.button');
@@ -89,16 +98,13 @@ const handleSubmit = (event) => {
       state.feeds.push(newFeed);
       renderFeed(newFeed);
       urlInput.value = '';
-      showMessage(i18next.t('messages.success'));
+
+      showSimpleMessage(i18next.t('messages.success'), false);
     })
     .catch(error => {
       showError(error.message);
-      // Не показываем второе сообщение для ошибок валидации
-      if (error.message !== i18next.t('errors.required') && 
-          error.message !== i18next.t('errors.invalidUrl') &&
-          error.message !== i18next.t('errors.duplicate')) {
-        showMessage(error.message, false);
-      }
+      // Показываем сообщение об ошибке
+      showSimpleMessage(error.message, true);
     })
     .finally(() => {
       submitButton.disabled = false;
@@ -118,7 +124,7 @@ const initApp = () => {
     })
     .catch(error => {
       console.error('Failed to initialize i18next:', error);
-      // Если i18next не загрузился, устанавливаем тексты по умолчанию
+      // fallback тексты
       heroTitle.textContent = 'RSS агрегатор';
       heroLead.textContent = 'Начните читать RSS сегодня! Это легко, это красиво.';
       submitButton.textContent = 'Добавить';

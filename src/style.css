@@ -1,7 +1,7 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
 .hero-section {
-  background-color: #343a40;
+  background-color: #383838;
   padding: 3rem 0;
   margin-bottom: 2rem;
 }
@@ -20,6 +20,18 @@
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
   color: #ffffff !important;
+  tect-align: left;
+}
+
+.hero-section .lead {
+  font-size: 1.2rem;
+  color: #f8f9fa !important;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+#rss-form {
+  text-align: left;
 }
 
 .hero-section .lead {
@@ -44,6 +56,7 @@
   color: #6c757d;
   font-size: 0.875rem;
   margin-top: 0.5rem;
+  text-align: center;
 }
 
 hr {
@@ -55,6 +68,7 @@ footer {
   font-size: 0.875rem;
   color: #6c757d;
   padding: 1rem 0;
+  text-align: center;
 }
 
 .card {
@@ -62,6 +76,7 @@ footer {
   border-radius: 0.5rem;
   margin-bottom: 1rem;
   transition: box-shadow 0.2s;
+  text-align: left;
 }
 
 .card:hover {
@@ -121,4 +136,18 @@ footer {
     opacity: 1;
     transform: translateY(0);
   }
+}
+.message-container {
+  min-height: 40px;
+  text-align: left
+}
+
+.text-success {
+  color: #198754 !important;
+  font-size: 0.875rem;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+  font-size: 0.875rem;
 }
