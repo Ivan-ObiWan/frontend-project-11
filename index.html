@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-  <!-- Шапка - текст по левому краю -->
   <div class="hero-section">
     <div class="container">
       <div class="row justify-content-center">
@@ -19,11 +18,9 @@
     </div>
   </div>
 
-  <!-- Основной контент - форма по центру -->
   <div class="container mt-4">
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6">
-        <!-- Форма -->
         <form id="rss-form" novalidate>
           <div class="mb-3">
             <div class="d-flex gap-2">
@@ -38,11 +35,27 @@
             <div class="form-text mt-2"></div>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
 
-        <hr class="my-4">
-
+  <div class="container mt-4">
+    <div class="row">
+      <!-- Посты - левая колонка -->
+      <div class="col-md-7">
+        <div id="posts"></div>
+      </div>
+      <!-- Фиды - правая колонка -->
+      <div class="col-md-5">
         <div id="feeds"></div>
+      </div>
+    </div>
+  </div>
 
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <hr class="my-4">
         <footer class="text-muted mt-4"></footer>
       </div>
     </div>

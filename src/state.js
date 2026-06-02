@@ -1,11 +1,38 @@
 import { proxy } from 'valtio';
 
 const state = proxy({
-  feeds: [],
+  // Плоские массивы сущностей
+  feeds: [],      // Массив фидов: { id, title, description, url }
+  posts: [],      // Массив постов: { id, feedId, title, link, description, pubDate }
+
+  postsByFeedId: {},  // { feedId: [postId1, postId2, ...] }
+  
   form: {
     url: '',
-    error: null
+    error: null,
+    isValid: true
+  },
+  
+  ui: {
+    loading: false,
+    error: null,
+    modalPost: null
   }
 });
+
+export const getFeedsList = () => state.feeds;
+
+export const getPostsList = () => state.posts;
+
+export const getPostsByFeedId = (feedId) => {
+  const postIds = state.postsByFeedId[feedId] || [];
+  return postIds.map(id => state.posts.find(post => post.id === id));
+};
+
+export const getAllPostsSorted = () => {
+  return [...state.posts].sort((a, b) => {
+    return new Date(b.pubDate) - new Date(a.pubDate);
+  });
+};
 
 export default state;
