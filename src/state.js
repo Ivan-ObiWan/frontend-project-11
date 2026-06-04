@@ -1,10 +1,8 @@
 import { proxy } from 'valtio';
 
 const state = proxy({
-  // Плоские массивы сущностей
-  feeds: [],      // Массив фидов: { id, title, description, url }
+  feeds: [],      // Массив фидов: { id, title, description, url, lastUpdate }
   posts: [],      // Массив постов: { id, feedId, title, link, description, pubDate }
-
   postsByFeedId: {},  // { feedId: [postId1, postId2, ...] }
   
   form: {
@@ -16,7 +14,8 @@ const state = proxy({
   ui: {
     loading: false,
     error: null,
-    modalPost: null
+    modalPost: null,
+    updateTimer: null
   }
 });
 

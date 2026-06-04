@@ -35,12 +35,14 @@ const footer = document.querySelector('footer');
 
 if (urlInput) urlInput.placeholder = 'Ссылка RSS';
 
+let updateTimeout = null;
+
 const showError = (message) => {
   const oldError = document.querySelector('.invalid-feedback');
   if (oldError) oldError.remove();
-
+  
   urlInput.classList.add('is-invalid');
-
+  
   const errorDiv = document.createElement('div');
   errorDiv.className = 'invalid-feedback';
   errorDiv.textContent = message;
@@ -57,12 +59,11 @@ const showSuccessMessage = (message) => {
   const oldMessage = document.querySelector('.success-message');
   if (oldMessage) oldMessage.remove();
   
-  // Создаём сообщение об успехе
   const messageDiv = document.createElement('div');
   messageDiv.className = 'success-message text-success mt-2';
   messageDiv.textContent = message;
   form.insertAdjacentElement('afterend', messageDiv);
-
+  
   setTimeout(() => {
     if (messageDiv.parentNode) messageDiv.remove();
   }, 5000);
@@ -176,6 +177,84 @@ const updateUILocales = () => {
   if (urlInput) urlInput.placeholder = 'Ссылка RSS';
 };
 
+const updateSingleFeed = (feed) => {
+  return fetchViaProxy(feed.url)
+    .then(rssData => parseRss(rssData, feed.url))
+    .then(parsed => {
+      const existingPostLinks = new Set(
+        state.posts.filter(p => p.feedId === feed.id).map(p => p.link)
+      );
+      
+      const newPosts = parsed.posts.filter(post => !existingPostLinks.has(post.link));
+      
+      if (newPosts.length > 0) {
+        const newPostIds = [];
+        newPosts.forEach(postData => {
+          const postId = `${feed.id}-${Date.now()}-${Math.random()}`;
+          const newPost = {
+            id: postId,
+            feedId: feed.id,
+            title: postData.title,
+            link: postData.link,
+            description: postData.description,
+            pubDate: postData.pubDate || new Date().toISOString()
+          };
+          state.posts.push(newPost);
+          newPostIds.push(postId);
+        });
+   
+        const existingIds = state.postsByFeedId[feed.id] || [];
+        state.postsByFeedId[feed.id] = [...existingIds, ...newPostIds];
+        
+        console.log(`Feed "${feed.title}" updated: +${newPosts.length} new posts`);
+      }
+      
+      return { feedId: feed.id, newPostsCount: newPosts.length };
+    })
+    .catch(error => {
+      console.error(`Error updating feed "${feed.title}":`, error.message);
+      return { feedId: feed.id, error: error.message };
+    });
+};
+
+const updateAllFeeds = () => {
+  if (state.feeds.length === 0) {
+    if (updateTimeout) clearTimeout(updateTimeout);
+    updateTimeout = setTimeout(updateAllFeeds, 5000);
+    return;
+  }
+
+  const updatePromises = state.feeds.map(feed => updateSingleFeed(feed));
+  
+  Promise.all(updatePromises)
+    .then(results => {
+      const totalNewPosts = results.reduce((sum, r) => sum + (r.newPostsCount || 0), 0);
+      if (totalNewPosts > 0) {
+        renderPosts();
+        showSuccessMessage(`Добавлено ${totalNewPosts} новых постов`);
+      }
+    })
+    .catch(error => {
+      console.error('Error updating feeds:', error);
+    })
+    .finally(() => {
+      if (updateTimeout) clearTimeout(updateTimeout);
+      updateTimeout = setTimeout(updateAllFeeds, 5000);
+    });
+};
+
+const startAutoUpdates = () => {
+  if (updateTimeout) clearTimeout(updateTimeout);
+  updateTimeout = setTimeout(updateAllFeeds, 5000);
+};
+
+const stopAutoUpdates = () => {
+  if (updateTimeout) {
+    clearTimeout(updateTimeout);
+    updateTimeout = null;
+  }
+};
+
 const processFeed = (url) => {
   return fetchViaProxy(url)
     .then(rssData => parseRss(rssData, url))
@@ -185,7 +264,8 @@ const processFeed = (url) => {
         id: feedId,
         title: parsed.feed.title,
         description: parsed.feed.description,
-        url: url
+        url: url,
+        lastUpdate: new Date().toISOString()
       };
       
       state.feeds.push(newFeed);
@@ -193,27 +273,24 @@ const processFeed = (url) => {
       const postIds = [];
       
       parsed.posts.forEach(postData => {
-        const existingPost = state.posts.find(p => p.link === postData.link);
+        const postId = `${feedId}-${Date.now()}-${Math.random()}`;
+        const newPost = {
+          id: postId,
+          feedId: feedId,
+          title: postData.title,
+          link: postData.link,
+          description: postData.description,
+          pubDate: postData.pubDate || new Date().toISOString()
+        };
         
-        if (!existingPost) {
-          const postId = `${feedId}-${Date.now()}-${Math.random()}`;
-          const newPost = {
-            id: postId,
-            feedId: feedId,
-            title: postData.title,
-            link: postData.link,
-            description: postData.description,
-            pubDate: postData.pubDate || new Date().toISOString()
-          };
-          
-          state.posts.push(newPost);
-          postIds.push(postId);
-        } else {
-          postIds.push(existingPost.id);
-        }
+        state.posts.push(newPost);
+        postIds.push(postId);
       });
       
       state.postsByFeedId[feedId] = postIds;
+
+      stopAutoUpdates();
+      startAutoUpdates();
       
       return { feed: newFeed, postsCount: postIds.length };
     });
@@ -225,7 +302,6 @@ const handleSubmit = (event) => {
   const url = urlInput.value.trim();
   const originalButtonText = submitButton.textContent;
   
-  // Проверка на дубликат
   const isDuplicate = state.feeds.some(feed => feed.url === url);
   if (isDuplicate) {
     showError(i18next.t('errors.duplicate'));
@@ -270,6 +346,7 @@ const initApp = () => {
       urlInput.focus();
       renderFeeds();
       renderPosts();
+      startAutoUpdates();
     })
     .catch(error => {
       console.error('Failed to initialize i18next:', error);
@@ -281,7 +358,14 @@ const initApp = () => {
       urlInput.placeholder = 'Ссылка RSS';
       form.addEventListener('submit', handleSubmit);
       urlInput.focus();
+      startAutoUpdates();
     });
 };
+
+window.addEventListener('beforeunload', () => {
+  if (updateTimeout) {
+    clearTimeout(updateTimeout);
+  }
+});
 
 initApp();
