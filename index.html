@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
+  <!-- Шапка -->
   <div class="hero-section">
     <div class="container">
       <div class="row justify-content-center">
@@ -18,6 +19,7 @@
     </div>
   </div>
 
+  <!-- Форма -->
   <div class="container mt-4">
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6">
@@ -39,19 +41,19 @@
     </div>
   </div>
 
+  <!-- Две колонки: Посты и Фиды -->
   <div class="container mt-4">
     <div class="row">
-      <!-- Посты - левая колонка -->
       <div class="col-md-7">
         <div id="posts"></div>
       </div>
-      <!-- Фиды - правая колонка -->
       <div class="col-md-5">
         <div id="feeds"></div>
       </div>
     </div>
   </div>
 
+  <!-- Футер -->
   <div class="container mt-4">
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6">
@@ -60,7 +62,54 @@
       </div>
     </div>
   </div>
+
+  <!-- Модальное окно -->
+  <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="postModalLabel">Заголовок поста</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          <p>Содержимое поста...</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <a href="#" class="btn btn-primary" id="readFullLink" target="_blank">Читать полностью</a>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
+  <!-- ТЕСТОВАЯ КНОПКА ДЛЯ ПРОВЕРКИ BOOTSTRAP -->
+  <div class="container mt-2">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#testModal">
+          ТЕСТ: Открыть модальное окно
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ТЕСТОВОЕ МОДАЛЬНОЕ ОКНО -->
+  <div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="testModalLabel">Тестовое окно</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          <p>Если вы видите это окно - Bootstrap работает!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>

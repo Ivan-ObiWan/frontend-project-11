@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import state, { getAllPostsSorted } from './state.js';
+import state, { getAllPostsSorted, markPostAsRead } from './state.js';
 import { validateUrl } from './validator.js';
 import initI18n from './i18n.js';
 import fetchViaProxy from './proxy.js';
@@ -10,32 +10,42 @@ const urlInput = document.getElementById('rss-url');
 const feedsContainer = document.getElementById('feeds');
 const postsContainer = document.getElementById('posts');
 
-const modal = document.createElement('div');
-modal.className = 'modal';
-modal.innerHTML = `
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title"></h5>
-      <button class="modal-close">&times;</button>
-    </div>
-    <div class="modal-body"></div>
-    <div class="modal-footer">
-      <button class="btn-read-more">Читать полностью</button>
-      <button class="btn-close-modal">Закрыть</button>
-    </div>
-  </div>
-`;
-document.body.appendChild(modal);
-
 const heroTitle = document.querySelector('.hero-section h1');
 const heroLead = document.querySelector('.hero-section .lead');
 const submitButton = document.querySelector('button[type="submit"]');
 const formText = document.querySelector('.form-text');
 const footer = document.querySelector('footer');
 
-if (urlInput) urlInput.placeholder = 'Ссылка RSS';
-
 let updateTimeout = null;
+
+// Получаем элементы модального окна
+const modalElement = document.getElementById('postModal');
+const modalTitle = document.getElementById('postModalLabel');
+const modalBody = modalElement?.querySelector('.modal-body p');
+const readFullLink = document.getElementById('readFullLink');
+
+// Обработчик события показа модального окна (через data-bs-toggle)
+if (modalElement) {
+  modalElement.addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget;
+    const postId = button?.getAttribute('data-post-id');
+    
+    if (postId) {
+      const post = state.posts.find(p => p.id === postId);
+      if (post && modalTitle && modalBody && readFullLink) {
+        modalTitle.textContent = post.title;
+        modalBody.textContent = post.description || 'Нет описания';
+        readFullLink.href = post.link;
+        
+        // Отмечаем пост как прочитанный
+        if (!post.read) {
+          markPostAsRead(post.id);
+          renderPosts();
+        }
+      }
+    }
+  });
+}
 
 const showError = (message) => {
   const oldError = document.querySelector('.invalid-feedback');
@@ -77,30 +87,6 @@ const formatDate = (dateString) => {
   } catch {
     return '';
   }
-};
-
-const openModal = (post) => {
-  const modalTitle = modal.querySelector('.modal-title');
-  const modalBody = modal.querySelector('.modal-body');
-  const readMoreBtn = modal.querySelector('.btn-read-more');
-  
-  modalTitle.textContent = post.title;
-  modalBody.textContent = post.description || 'Нет описания';
-  readMoreBtn.onclick = () => {
-    window.open(post.link, '_blank');
-  };
-  
-  modal.classList.add('active');
-};
-
-const closeModal = () => {
-  modal.classList.remove('active');
-};
-
-modal.querySelector('.modal-close').onclick = closeModal;
-modal.querySelector('.btn-close-modal').onclick = closeModal;
-modal.onclick = (e) => {
-  if (e.target === modal) closeModal();
 };
 
 const renderFeeds = () => {
@@ -146,18 +132,20 @@ const renderPosts = () => {
     listItem.className = 'post-item';
     
     const postTitle = document.createElement('span');
-    postTitle.className = 'post-title';
+    postTitle.className = post.read ? 'post-title fw-normal' : 'post-title fw-bold';
     postTitle.textContent = post.title;
-    postTitle.onclick = () => openModal(post);
     
     const dateSpan = document.createElement('span');
     dateSpan.className = 'post-date';
     dateSpan.textContent = formatDate(post.pubDate);
     
+    // Кнопка с data-bs-toggle и data-post-id
     const viewButton = document.createElement('button');
     viewButton.className = 'post-view-button';
     viewButton.textContent = 'Просмотр';
-    viewButton.onclick = () => openModal(post);
+    viewButton.setAttribute('data-bs-toggle', 'modal');
+    viewButton.setAttribute('data-bs-target', '#postModal');
+    viewButton.setAttribute('data-post-id', post.id);
     
     listItem.appendChild(postTitle);
     listItem.appendChild(dateSpan);
@@ -197,22 +185,21 @@ const updateSingleFeed = (feed) => {
             title: postData.title,
             link: postData.link,
             description: postData.description,
-            pubDate: postData.pubDate || new Date().toISOString()
+            pubDate: postData.pubDate || new Date().toISOString(),
+            read: false
           };
           state.posts.push(newPost);
           newPostIds.push(postId);
         });
-   
+        
         const existingIds = state.postsByFeedId[feed.id] || [];
         state.postsByFeedId[feed.id] = [...existingIds, ...newPostIds];
-        
-        console.log(`Feed "${feed.title}" updated: +${newPosts.length} new posts`);
       }
       
       return { feedId: feed.id, newPostsCount: newPosts.length };
     })
     .catch(error => {
-      console.error(`Error updating feed "${feed.title}":`, error.message);
+      console.error(`Error updating feed:`, error.message);
       return { feedId: feed.id, error: error.message };
     });
 };
@@ -223,7 +210,7 @@ const updateAllFeeds = () => {
     updateTimeout = setTimeout(updateAllFeeds, 5000);
     return;
   }
-
+  
   const updatePromises = state.feeds.map(feed => updateSingleFeed(feed));
   
   Promise.all(updatePromises)
@@ -233,9 +220,6 @@ const updateAllFeeds = () => {
         renderPosts();
         showSuccessMessage(`Добавлено ${totalNewPosts} новых постов`);
       }
-    })
-    .catch(error => {
-      console.error('Error updating feeds:', error);
     })
     .finally(() => {
       if (updateTimeout) clearTimeout(updateTimeout);
@@ -280,7 +264,8 @@ const processFeed = (url) => {
           title: postData.title,
           link: postData.link,
           description: postData.description,
-          pubDate: postData.pubDate || new Date().toISOString()
+          pubDate: postData.pubDate || new Date().toISOString(),
+          read: false
         };
         
         state.posts.push(newPost);
@@ -288,7 +273,7 @@ const processFeed = (url) => {
       });
       
       state.postsByFeedId[feedId] = postIds;
-
+      
       stopAutoUpdates();
       startAutoUpdates();
       
