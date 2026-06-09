@@ -11,7 +11,8 @@ export default [
       },
     },
     rules: {
-      'no-console': 'warn',
+      'no-console': ['warn', { allow: ['error', 'warn'] }],
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
 ];

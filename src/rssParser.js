@@ -44,7 +44,7 @@ const parseRss = (xmlString, feedUrl) => {
         },
         posts: posts
       });
-    } catch (error) {
+    } catch {
       reject(new Error(i18next.t('errors.invalidRss')));
     }
   });

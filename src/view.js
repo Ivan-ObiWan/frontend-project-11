@@ -333,7 +333,6 @@ subscribe(state, () => {
 const initApp = () => {
   initI18n()
     .then(() => {
-      console.log('i18next initialized');
       updateUILocales();
       form.addEventListener('submit', handleSubmit);
       urlInput.focus();
