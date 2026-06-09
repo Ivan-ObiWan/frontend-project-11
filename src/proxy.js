@@ -1,3 +1,5 @@
+import i18next from 'i18next';
+
 const PROXY_URL = 'https://allorigins.hexlet.app/get';
 
 const fetchViaProxy = (url) => {
@@ -8,7 +10,7 @@ const fetchViaProxy = (url) => {
     fetch(proxyRequestUrl)
       .then(response => {
         if (!response.ok) {
-          reject(new Error(`HTTP error! status: ${response.status}`));
+          reject(new Error(i18next.t('errors.networkError')));
         }
         return response.json();
       })
@@ -16,11 +18,11 @@ const fetchViaProxy = (url) => {
         if (data.contents) {
           resolve(data.contents);
         } else {
-          reject(new Error('Empty response from proxy'));
+          reject(new Error(i18next.t('errors.emptyResponse')));
         }
       })
       .catch(error => {
-        reject(new Error(`Network error: ${error.message}`));
+        reject(new Error(i18next.t('errors.networkError')));
       });
   });
 };

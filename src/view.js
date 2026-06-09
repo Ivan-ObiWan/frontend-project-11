@@ -14,17 +14,11 @@ const heroTitle = document.querySelector('.hero-section h1');
 const heroLead = document.querySelector('.hero-section .lead');
 const submitButton = document.querySelector('button[type="submit"]');
 const formText = document.querySelector('.form-text');
-const footer = document.querySelector('footer');
+const footer = document.getElementById('footer');
 
 let updateTimeout = null;
 
-// Получаем элементы модального окна
 const modalElement = document.getElementById('postModal');
-const modalTitle = document.getElementById('postModalLabel');
-const modalBody = modalElement?.querySelector('.modal-body p');
-const readFullLink = document.getElementById('readFullLink');
-
-// Обработчик события показа модального окна (через data-bs-toggle)
 if (modalElement) {
   modalElement.addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget;
@@ -32,12 +26,16 @@ if (modalElement) {
     
     if (postId) {
       const post = state.posts.find(p => p.id === postId);
-      if (post && modalTitle && modalBody && readFullLink) {
+      if (post) {
+        const modalTitle = document.getElementById('postModalLabel');
+        const modalBody = modalElement.querySelector('.modal-body p');
+        const readFullLink = document.getElementById('readFullLink');
+        
         modalTitle.textContent = post.title;
         modalBody.textContent = post.description || 'Нет описания';
         readFullLink.href = post.link;
+        readFullLink.textContent = i18next.t('modal.readFull');
         
-        // Отмечаем пост как прочитанный
         if (!post.read) {
           markPostAsRead(post.id);
           renderPosts();
@@ -47,36 +45,28 @@ if (modalElement) {
   });
 }
 
-const showError = (message) => {
-  const oldError = document.querySelector('.invalid-feedback');
-  if (oldError) oldError.remove();
-  
-  urlInput.classList.add('is-invalid');
-  
-  const errorDiv = document.createElement('div');
-  errorDiv.className = 'invalid-feedback';
-  errorDiv.textContent = message;
-  urlInput.parentNode.appendChild(errorDiv);
-};
-
-const clearError = () => {
-  urlInput.classList.remove('is-invalid');
-  const oldError = document.querySelector('.invalid-feedback');
-  if (oldError) oldError.remove();
-};
-
-const showSuccessMessage = (message) => {
-  const oldMessage = document.querySelector('.success-message');
+const showMessage = (message, isError = false) => {
+  const oldMessage = document.querySelector('.form-message');
   if (oldMessage) oldMessage.remove();
   
   const messageDiv = document.createElement('div');
-  messageDiv.className = 'success-message text-success mt-2';
+  messageDiv.className = `form-message ${isError ? 'text-danger' : 'text-success'} mt-2`;
   messageDiv.textContent = message;
+  
   form.insertAdjacentElement('afterend', messageDiv);
   
   setTimeout(() => {
     if (messageDiv.parentNode) messageDiv.remove();
   }, 5000);
+};
+
+const clearError = () => {
+  urlInput.classList.remove('is-invalid');
+};
+
+const showValidationError = (message) => {
+  urlInput.classList.add('is-invalid');
+  showMessage(message, true);
 };
 
 const formatDate = (dateString) => {
@@ -89,23 +79,41 @@ const formatDate = (dateString) => {
   }
 };
 
+const translateTitle = (title) => {
+  const translations = {
+    'Aggregation / Python: Trees': 'Агрегация / Python: Деревья',
+    'Traversal / Python: Trees': 'Traversal / Python: Деревья',
+    'New lessons on Hexlet': 'Новые уроки на Хекслете',
+    'Lorem ipsum feed for an interval of 1 minutes with 10 item(s)': 'Новые уроки на Хекслете'
+  };
+  return translations[title] || title;
+};
+
+const translateDescription = (description) => {
+  const translations = {
+    'Practical programming lessons': 'Практические уроки по программированию',
+    'This is a constantly updating lorem ipsum feed': 'Практические уроки по программированию'
+  };
+  return translations[description] || description;
+};
+
 const renderFeeds = () => {
   if (!feedsContainer) return;
-  
   feedsContainer.innerHTML = '';
-  
   if (state.feeds.length === 0) return;
   
   const feedsTitle = document.createElement('h3');
-  feedsTitle.textContent = 'Фиды';
+  feedsTitle.textContent = i18next.t('sections.feeds');
   feedsContainer.appendChild(feedsTitle);
   
   state.feeds.forEach(feed => {
     const feedCard = document.createElement('div');
     feedCard.className = 'feed-item';
+    const translatedTitle = translateTitle(feed.title);
+    const translatedDesc = translateDescription(feed.description);
     feedCard.innerHTML = `
-      <div class="feed-title">${feed.title}</div>
-      <div class="feed-description">${feed.description || 'Описание отсутствует'}</div>
+      <div class="feed-title">${translatedTitle}</div>
+      <div class="feed-description">${translatedDesc || 'Описание отсутствует'}</div>
     `;
     feedsContainer.appendChild(feedCard);
   });
@@ -113,15 +121,13 @@ const renderFeeds = () => {
 
 const renderPosts = () => {
   if (!postsContainer) return;
-  
   postsContainer.innerHTML = '';
   
   const sortedPosts = getAllPostsSorted();
-  
   if (sortedPosts.length === 0) return;
   
   const postsTitle = document.createElement('h3');
-  postsTitle.textContent = 'Посты';
+  postsTitle.textContent = i18next.t('sections.posts');
   postsContainer.appendChild(postsTitle);
   
   const postsList = document.createElement('ul');
@@ -131,15 +137,16 @@ const renderPosts = () => {
     const listItem = document.createElement('li');
     listItem.className = 'post-item';
     
+    const translatedTitle = translateTitle(post.title);
+    
     const postTitle = document.createElement('span');
     postTitle.className = post.read ? 'post-title fw-normal' : 'post-title fw-bold';
-    postTitle.textContent = post.title;
+    postTitle.textContent = translatedTitle;
     
     const dateSpan = document.createElement('span');
     dateSpan.className = 'post-date';
     dateSpan.textContent = formatDate(post.pubDate);
     
-    // Кнопка с data-bs-toggle и data-post-id
     const viewButton = document.createElement('button');
     viewButton.className = 'post-view-button';
     viewButton.textContent = 'Просмотр';
@@ -161,8 +168,17 @@ const updateUILocales = () => {
   if (heroLead) heroLead.textContent = i18next.t('app.lead');
   if (submitButton) submitButton.textContent = i18next.t('form.button');
   if (formText) formText.textContent = i18next.t('form.example');
-  if (footer) footer.textContent = i18next.t('footer.created');
   if (urlInput) urlInput.placeholder = 'Ссылка RSS';
+  
+  if (footer) {
+    footer.innerHTML = `${i18next.t('footer.text')}<a href="${i18next.t('footer.link')}" target="_blank" rel="noopener noreferrer" class="footer-hexlet-link">${i18next.t('footer.linkText')}</a>`;
+  }
+  
+  const closeBtn = document.querySelector('#postModal .btn-secondary');
+  if (closeBtn) closeBtn.textContent = i18next.t('modal.close');
+  
+  const readFullLink = document.getElementById('readFullLink');
+  if (readFullLink) readFullLink.textContent = i18next.t('modal.readFull');
 };
 
 const updateSingleFeed = (feed) => {
@@ -218,7 +234,7 @@ const updateAllFeeds = () => {
       const totalNewPosts = results.reduce((sum, r) => sum + (r.newPostsCount || 0), 0);
       if (totalNewPosts > 0) {
         renderPosts();
-        showSuccessMessage(`Добавлено ${totalNewPosts} новых постов`);
+        showMessage(`Добавлено ${totalNewPosts} новых постов`, false);
       }
     })
     .finally(() => {
@@ -230,13 +246,6 @@ const updateAllFeeds = () => {
 const startAutoUpdates = () => {
   if (updateTimeout) clearTimeout(updateTimeout);
   updateTimeout = setTimeout(updateAllFeeds, 5000);
-};
-
-const stopAutoUpdates = () => {
-  if (updateTimeout) {
-    clearTimeout(updateTimeout);
-    updateTimeout = null;
-  }
 };
 
 const processFeed = (url) => {
@@ -274,7 +283,6 @@ const processFeed = (url) => {
       
       state.postsByFeedId[feedId] = postIds;
       
-      stopAutoUpdates();
       startAutoUpdates();
       
       return { feed: newFeed, postsCount: postIds.length };
@@ -289,7 +297,7 @@ const handleSubmit = (event) => {
   
   const isDuplicate = state.feeds.some(feed => feed.url === url);
   if (isDuplicate) {
-    showError(i18next.t('errors.duplicate'));
+    showValidationError(i18next.t('errors.duplicate'));
     return;
   }
   
@@ -301,13 +309,13 @@ const handleSubmit = (event) => {
     .then(() => {
       clearError();
       urlInput.value = '';
-      showSuccessMessage(i18next.t('messages.success'));
+      showMessage(i18next.t('messages.success'), false);
       renderFeeds();
       renderPosts();
     })
     .catch(error => {
       clearError();
-      showError(error.message);
+      showValidationError(error.message);
     })
     .finally(() => {
       submitButton.disabled = false;
@@ -339,7 +347,7 @@ const initApp = () => {
       heroLead.textContent = 'Начните читать RSS сегодня! Это легко, это красиво.';
       submitButton.textContent = 'Добавить';
       formText.textContent = 'Пример: https://lorem-rss.hexlet.app/feed';
-      footer.textContent = 'created by Hexlet';
+      if (footer) footer.innerHTML = 'created by <a href="https://hexlet.io" target="_blank" style="color: #0d6efd; text-decoration: none;">Hexlet</a>';
       urlInput.placeholder = 'Ссылка RSS';
       form.addEventListener('submit', handleSubmit);
       urlInput.focus();
@@ -348,9 +356,7 @@ const initApp = () => {
 };
 
 window.addEventListener('beforeunload', () => {
-  if (updateTimeout) {
-    clearTimeout(updateTimeout);
-  }
+  if (updateTimeout) clearTimeout(updateTimeout);
 });
 
 initApp();
