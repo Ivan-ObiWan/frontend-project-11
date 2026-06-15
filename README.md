@@ -10,6 +10,10 @@
 
 [![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=Ivan-ObiWan_frontend-project-11)
 
+##  Деплой
+
+**Живая версия:** [frontend-project-11-flame-omega.vercel.app](https://frontend-project-11-flame-omega.vercel.app)
+
 ## О проекте
 
 **RSS** – специализированный формат, предназначенный для описания лент новостей, анонсов статей и других материалов. Это наиболее простой способ для сайтов (обычно, блогов) дать возможность пользователям подписываться на изменения. Для этого используются специальные сервисы, называемые **RSS-агрегаторами**.
