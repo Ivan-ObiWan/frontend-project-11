@@ -46,11 +46,11 @@ if (modalElement) {
 }
 
 const showMessage = (message, isError = false) => {
-  const oldMessage = document.querySelector('.form-message');
+  const oldMessage = document.querySelector('.feedback');
   if (oldMessage) oldMessage.remove();
   
   const messageDiv = document.createElement('div');
-  messageDiv.className = `form-message ${isError ? 'text-danger' : 'text-success'} mt-2`;
+  messageDiv.className = `feedback ${isError ? 'text-danger' : 'text-success'} mt-2`;
   messageDiv.textContent = message;
   
   form.insertAdjacentElement('afterend', messageDiv);
