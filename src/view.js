@@ -18,28 +18,6 @@ const footer = document.getElementById('footer');
 
 let updateTimeout = null;
 
-const openModal = (post) => {
-  const modalElement = document.getElementById('postModal');
-  const modalTitle = document.getElementById('postModalLabel');
-  const modalBody = modalElement?.querySelector('.modal-body p');
-  const readFullLink = document.getElementById('readFullLink');
-
-  if (modalTitle && modalBody && readFullLink) {
-    modalTitle.textContent = post.title;
-    modalBody.textContent = post.description || 'Нет описания';
-    readFullLink.href = post.link;
-    readFullLink.textContent = i18next.t('modal.readFull');
-
-    if (!post.read) {
-      markPostAsRead(post.id);
-      renderPosts();
-    }
-
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
-  }
-};
-
 const modalElement = document.getElementById('postModal');
 if (modalElement) {
   modalElement.addEventListener('show.bs.modal', function(event) {
@@ -160,7 +138,6 @@ const renderPosts = () => {
 
     const translatedTitle = translateTitle(post.title);
 
-    // Заголовок поста - НЕ ссылка, только текст
     const postTitle = document.createElement('span');
     postTitle.className = `post-title ${post.read ? 'post-read' : 'post-unread'}`;
     postTitle.textContent = translatedTitle;
