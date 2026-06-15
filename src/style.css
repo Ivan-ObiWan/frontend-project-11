@@ -142,6 +142,18 @@ footer {
   flex: 1;
 }
 
+.post-unread {
+  font-weight: 700;
+  color: #0d6efd;
+  cursor: default;
+}
+
+.post-read {
+  font-weight: 400;
+  color: #6c757d;
+  cursor: default;
+}
+
 .post-title:hover {
   color: #0a58ca;
 }

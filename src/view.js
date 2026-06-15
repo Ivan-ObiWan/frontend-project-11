@@ -160,18 +160,10 @@ const renderPosts = () => {
 
     const translatedTitle = translateTitle(post.title);
 
-    // Ссылка поста - синяя, жирная для непрочитанных
-    const postLink = document.createElement('a');
-    postLink.href = '#';
-    postLink.className = `post-link ${post.read ? 'fw-normal' : 'fw-bold'}`;
-    postLink.textContent = translatedTitle;
-    postLink.style.cursor = 'pointer';
-    postLink.style.textDecoration = 'none';
-    postLink.style.color = '#0d6efd';
-    postLink.onclick = (e) => {
-      e.preventDefault();
-      openModal(post);
-    };
+    // Заголовок поста - НЕ ссылка, только текст
+    const postTitle = document.createElement('span');
+    postTitle.className = `post-title ${post.read ? 'post-read' : 'post-unread'}`;
+    postTitle.textContent = translatedTitle;
 
     const dateSpan = document.createElement('span');
     dateSpan.className = 'post-date';
@@ -184,7 +176,7 @@ const renderPosts = () => {
     viewButton.setAttribute('data-bs-target', '#postModal');
     viewButton.setAttribute('data-post-id', post.id);
 
-    listItem.appendChild(postLink);
+    listItem.appendChild(postTitle);
     listItem.appendChild(dateSpan);
     listItem.appendChild(viewButton);
     postsList.appendChild(listItem);
