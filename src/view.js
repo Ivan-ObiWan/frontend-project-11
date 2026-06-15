@@ -18,12 +18,33 @@ const footer = document.getElementById('footer');
 
 let updateTimeout = null;
 
+const openModal = (post) => {
+  const modalElement = document.getElementById('postModal');
+  const modalTitle = document.getElementById('postModalLabel');
+  const modalBody = modalElement?.querySelector('.modal-body p');
+  const readFullLink = document.getElementById('readFullLink');
+
+  if (modalTitle && modalBody && readFullLink) {
+    modalTitle.textContent = post.title;
+    modalBody.textContent = post.description || 'Нет описания';
+    readFullLink.href = post.link;
+    readFullLink.textContent = i18next.t('modal.readFull');
+
+    if (!post.read) {
+      markPostAsRead(post.id);
+      renderPosts();
+    }
+
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+};
+
 const modalElement = document.getElementById('postModal');
 if (modalElement) {
   modalElement.addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget;
     const postId = button?.getAttribute('data-post-id');
-
     if (postId) {
       const post = state.posts.find(p => p.id === postId);
       if (post) {
@@ -139,9 +160,18 @@ const renderPosts = () => {
 
     const translatedTitle = translateTitle(post.title);
 
-    const postTitle = document.createElement('span');
-    postTitle.className = post.read ? 'post-title fw-normal' : 'post-title fw-bold';
-    postTitle.textContent = translatedTitle;
+    // Ссылка поста - синяя, жирная для непрочитанных
+    const postLink = document.createElement('a');
+    postLink.href = '#';
+    postLink.className = `post-link ${post.read ? 'fw-normal' : 'fw-bold'}`;
+    postLink.textContent = translatedTitle;
+    postLink.style.cursor = 'pointer';
+    postLink.style.textDecoration = 'none';
+    postLink.style.color = '#0d6efd';
+    postLink.onclick = (e) => {
+      e.preventDefault();
+      openModal(post);
+    };
 
     const dateSpan = document.createElement('span');
     dateSpan.className = 'post-date';
@@ -154,7 +184,7 @@ const renderPosts = () => {
     viewButton.setAttribute('data-bs-target', '#postModal');
     viewButton.setAttribute('data-post-id', post.id);
 
-    listItem.appendChild(postTitle);
+    listItem.appendChild(postLink);
     listItem.appendChild(dateSpan);
     listItem.appendChild(viewButton);
     postsList.appendChild(listItem);

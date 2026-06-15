@@ -146,6 +146,15 @@ footer {
   color: #0a58ca;
 }
 
+.post-link {
+  color: #0d6efd !important;
+  text-decoration: none;
+}
+
+.post-link:hover {
+  text-decoration: underline;
+}
+
 .fw-bold {
   font-weight: 700;
 }
