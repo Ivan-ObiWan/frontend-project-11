@@ -23,19 +23,19 @@ if (modalElement) {
   modalElement.addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget;
     const postId = button?.getAttribute('data-post-id');
-    
+
     if (postId) {
       const post = state.posts.find(p => p.id === postId);
       if (post) {
         const modalTitle = document.getElementById('postModalLabel');
         const modalBody = modalElement.querySelector('.modal-body p');
         const readFullLink = document.getElementById('readFullLink');
-        
+
         modalTitle.textContent = post.title;
         modalBody.textContent = post.description || 'Нет описания';
         readFullLink.href = post.link;
         readFullLink.textContent = i18next.t('modal.readFull');
-        
+
         if (!post.read) {
           markPostAsRead(post.id);
           renderPosts();
@@ -48,13 +48,13 @@ if (modalElement) {
 const showMessage = (message, isError = false) => {
   const oldMessage = document.querySelector('.feedback');
   if (oldMessage) oldMessage.remove();
-  
+
   const messageDiv = document.createElement('div');
   messageDiv.className = `feedback ${isError ? 'text-danger' : 'text-success'} mt-2`;
   messageDiv.textContent = message;
-  
+
   form.insertAdjacentElement('afterend', messageDiv);
-  
+
   setTimeout(() => {
     if (messageDiv.parentNode) messageDiv.remove();
   }, 5000);
@@ -101,11 +101,11 @@ const renderFeeds = () => {
   if (!feedsContainer) return;
   feedsContainer.innerHTML = '';
   if (state.feeds.length === 0) return;
-  
+
   const feedsTitle = document.createElement('h3');
   feedsTitle.textContent = i18next.t('sections.feeds');
   feedsContainer.appendChild(feedsTitle);
-  
+
   state.feeds.forEach(feed => {
     const feedCard = document.createElement('div');
     feedCard.className = 'feed-item';
@@ -122,44 +122,44 @@ const renderFeeds = () => {
 const renderPosts = () => {
   if (!postsContainer) return;
   postsContainer.innerHTML = '';
-  
+
   const sortedPosts = getAllPostsSorted();
   if (sortedPosts.length === 0) return;
-  
+
   const postsTitle = document.createElement('h3');
   postsTitle.textContent = i18next.t('sections.posts');
   postsContainer.appendChild(postsTitle);
-  
+
   const postsList = document.createElement('ul');
   postsList.className = 'posts-list';
-  
+
   sortedPosts.forEach(post => {
     const listItem = document.createElement('li');
     listItem.className = 'post-item';
-    
+
     const translatedTitle = translateTitle(post.title);
-    
+
     const postTitle = document.createElement('span');
     postTitle.className = post.read ? 'post-title fw-normal' : 'post-title fw-bold';
     postTitle.textContent = translatedTitle;
-    
+
     const dateSpan = document.createElement('span');
     dateSpan.className = 'post-date';
     dateSpan.textContent = formatDate(post.pubDate);
-    
+
     const viewButton = document.createElement('button');
     viewButton.className = 'post-view-button';
     viewButton.textContent = 'Просмотр';
     viewButton.setAttribute('data-bs-toggle', 'modal');
     viewButton.setAttribute('data-bs-target', '#postModal');
     viewButton.setAttribute('data-post-id', post.id);
-    
+
     listItem.appendChild(postTitle);
     listItem.appendChild(dateSpan);
     listItem.appendChild(viewButton);
     postsList.appendChild(listItem);
   });
-  
+
   postsContainer.appendChild(postsList);
 };
 
@@ -169,14 +169,14 @@ const updateUILocales = () => {
   if (submitButton) submitButton.textContent = i18next.t('form.button');
   if (formText) formText.textContent = i18next.t('form.example');
   if (urlInput) urlInput.placeholder = 'Ссылка RSS';
-  
+
   if (footer) {
     footer.innerHTML = `${i18next.t('footer.text')}<a href="${i18next.t('footer.link')}" target="_blank" rel="noopener noreferrer" class="footer-hexlet-link">${i18next.t('footer.linkText')}</a>`;
   }
-  
+
   const closeBtn = document.querySelector('#postModal .btn-secondary');
   if (closeBtn) closeBtn.textContent = i18next.t('modal.close');
-  
+
   const readFullLink = document.getElementById('readFullLink');
   if (readFullLink) readFullLink.textContent = i18next.t('modal.readFull');
 };
@@ -188,9 +188,9 @@ const updateSingleFeed = (feed) => {
       const existingPostLinks = new Set(
         state.posts.filter(p => p.feedId === feed.id).map(p => p.link)
       );
-      
+
       const newPosts = parsed.posts.filter(post => !existingPostLinks.has(post.link));
-      
+
       if (newPosts.length > 0) {
         const newPostIds = [];
         newPosts.forEach(postData => {
@@ -207,11 +207,11 @@ const updateSingleFeed = (feed) => {
           state.posts.push(newPost);
           newPostIds.push(postId);
         });
-        
+
         const existingIds = state.postsByFeedId[feed.id] || [];
         state.postsByFeedId[feed.id] = [...existingIds, ...newPostIds];
       }
-      
+
       return { feedId: feed.id, newPostsCount: newPosts.length };
     })
     .catch(error => {
@@ -226,9 +226,9 @@ const updateAllFeeds = () => {
     updateTimeout = setTimeout(updateAllFeeds, 5000);
     return;
   }
-  
+
   const updatePromises = state.feeds.map(feed => updateSingleFeed(feed));
-  
+
   Promise.all(updatePromises)
     .then(results => {
       const totalNewPosts = results.reduce((sum, r) => sum + (r.newPostsCount || 0), 0);
@@ -260,11 +260,11 @@ const processFeed = (url) => {
         url: url,
         lastUpdate: new Date().toISOString()
       };
-      
+
       state.feeds.push(newFeed);
-      
+
       const postIds = [];
-      
+
       parsed.posts.forEach(postData => {
         const postId = `${feedId}-${Date.now()}-${Math.random()}`;
         const newPost = {
@@ -276,34 +276,34 @@ const processFeed = (url) => {
           pubDate: postData.pubDate || new Date().toISOString(),
           read: false
         };
-        
+
         state.posts.push(newPost);
         postIds.push(postId);
       });
-      
+
       state.postsByFeedId[feedId] = postIds;
-      
+
       startAutoUpdates();
-      
+
       return { feed: newFeed, postsCount: postIds.length };
     });
 };
 
 const handleSubmit = (event) => {
   event.preventDefault();
-  
+
   const url = urlInput.value.trim();
   const originalButtonText = submitButton.textContent;
-  
+
   const isDuplicate = state.feeds.some(feed => feed.url === url);
   if (isDuplicate) {
     showValidationError(i18next.t('errors.duplicate'));
     return;
   }
-  
+
   submitButton.disabled = true;
   submitButton.textContent = i18next.t('form.loading');
-  
+
   validateUrl(url, state.feeds)
     .then(validUrl => processFeed(validUrl))
     .then(() => {
