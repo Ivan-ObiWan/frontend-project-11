@@ -23,16 +23,20 @@
       <div class="col-md-8 col-lg-6">
         <form id="rss-form" novalidate>
           <div class="mb-3">
+            <label for="rss-url" class="form-label fw-bold">Ссылка RSS</label>
             <div class="d-flex gap-2">
               <input 
                 type="text" 
                 class="form-control" 
                 id="rss-url" 
+                name="url"
+                aria-label="url"
                 placeholder="Ссылка RSS"
+                required
               >
-              <button type="submit" class="btn btn-primary"></button>
+              <button type="submit" class="btn btn-primary">Добавить</button>
             </div>
-            <div class="form-text mt-2"></div>
+            <div class="form-text mt-2">Пример: https://lorem-rss.hexlet.app/feed</div>
           </div>
         </form>
       </div>
@@ -54,12 +58,13 @@
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6">
         <hr class="my-4">
-        <footer class="text-muted mt-4" id="footer"></footer>
+        <footer class="text-muted mt-4">created by <a href="https://hexlet.io" target="_blank" style="color: #0d6efd;">Hexlet</a></footer>
       </div>
     </div>
   </div>
 
-   <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+  <!-- Модальное окно - правильный порядок кнопок -->
+  <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -67,7 +72,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
         </div>
         <div class="modal-body">
-          <p>Содержимое поста...</p>
+          <p></p>
         </div>
         <div class="modal-footer">
           <a href="#" class="btn btn-primary" id="readFullLink" target="_blank">Читать полностью</a>
