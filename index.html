@@ -46,30 +46,10 @@
     <div class="container mt-4">
       <div class="row">
         <div class="col-md-7">
-          <div id="posts" class="posts">
-            <h3>Посты</h3>
-            <ul class="posts-list">
-              <li class="post-item">
-                <a href="#" class="post-link fw-bold">Агрегация / Python: Деревья</a>
-                <span class="post-date">16.06.2026</span>
-                <button class="post-view-button" data-bs-toggle="modal" data-bs-target="#postModal" data-post-id="test-1">Просмотр</button>
-              </li>
-              <li class="post-item">
-                <a href="#" class="post-link fw-bold">Traversal / Python: Деревья</a>
-                <span class="post-date">16.06.2026</span>
-                <button class="post-view-button" data-bs-toggle="modal" data-bs-target="#postModal" data-post-id="test-2">Просмотр</button>
-              </li>
-            </ul>
-          </div>
+          <div id="posts"></div>
         </div>
         <div class="col-md-5">
-          <div id="feeds" class="feeds">
-            <h3>Фиды</h3>
-            <div class="feed-item">
-              <h3 class="feed-title">Новые уроки на Хекслете</h3>
-              <div class="feed-description">Практические уроки по программированию</div>
-            </div>
-          </div>
+          <div id="feeds"></div>
         </div>
       </div>
     </div>
@@ -79,11 +59,12 @@
     created by <a href="https://hexlet.io" target="_blank" style="color: #0d6efd; text-decoration: none;">Hexlet</a>
   </footer>
 
-  <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+  <!-- Модальное окно с id="modal" для тестов -->
+  <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="postModalLabel">Заголовок поста</h5>
+          <h5 class="modal-title" id="modalLabel">Заголовок поста</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
         </div>
         <div class="modal-body">

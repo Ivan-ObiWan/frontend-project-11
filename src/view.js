@@ -18,7 +18,7 @@ const formText = document.querySelector('.form-text');
 
 let updateTimeout = null;
 
-const modalElement = document.getElementById('postModal');
+const modalElement = document.getElementById('modal');
 if (modalElement) {
   modalElement.addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget;
@@ -26,7 +26,7 @@ if (modalElement) {
     if (postId) {
       const post = state.posts.find(p => p.id === postId);
       if (post) {
-        const modalTitle = document.getElementById('postModalLabel');
+        const modalTitle = document.getElementById('modalLabel');
         const modalBody = modalElement.querySelector('.modal-body p');
         const readFullLink = document.getElementById('readFullLink');
 
@@ -159,7 +159,7 @@ const renderPosts = () => {
     viewButton.className = 'post-view-button';
     viewButton.textContent = 'Просмотр';
     viewButton.setAttribute('data-bs-toggle', 'modal');
-    viewButton.setAttribute('data-bs-target', '#postModal');
+    viewButton.setAttribute('data-bs-target', '#modal');
     viewButton.setAttribute('data-post-id', post.id);
 
     listItem.appendChild(postLink);
@@ -178,7 +178,7 @@ const updateUILocales = () => {
   if (formText) formText.textContent = i18next.t('form.example');
   if (urlInput) urlInput.placeholder = 'Ссылка RSS';
 
-  const closeBtn = document.querySelector('#postModal .btn-secondary');
+  const closeBtn = document.querySelector('#modal .btn-secondary');
   if (closeBtn) closeBtn.textContent = i18next.t('modal.close');
 
   const readFullLink = document.getElementById('readFullLink');
