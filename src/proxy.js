@@ -1,6 +1,5 @@
 import i18next from 'i18next';
 
-// Прокси для обхода CORS
 const PROXY_URL = 'https://allorigins.hexlet.app/get';
 
 const fetchViaProxy = (url) => {
@@ -19,7 +18,7 @@ const fetchViaProxy = (url) => {
         if (data.contents) {
           resolve(data.contents);
         } else {
-          reject(new Error(i18next.t('errors.emptyResponse')));
+          reject(new Error(i18next.t('errors.invalidRss')));
         }
       })
       .catch(() => {
