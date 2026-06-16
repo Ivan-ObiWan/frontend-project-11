@@ -141,7 +141,7 @@ const renderPosts = () => {
 
     const postLink = document.createElement('a');
     postLink.href = '#';
-    postLink.className = `post-link ${post.read ? 'fw-normal' : 'fw-bold'}`;
+    postLink.className = `post-link ${post.read ? 'post-read' : 'post-unread'}`;
     postLink.textContent = translatedTitle;
     postLink.style.cursor = 'pointer';
     postLink.style.textDecoration = 'none';

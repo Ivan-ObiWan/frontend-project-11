@@ -1,5 +1,17 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
 .hero-section {
   background-color: #343a40;
   padding: 3rem 0;
@@ -136,43 +148,24 @@ footer {
   border-bottom: 1px solid #e9ecef;
 }
 
-.post-title {
-  cursor: pointer;
-  transition: color 0.2s;
-  flex: 1;
-}
-
-.post-unread {
-  font-weight: 700;
-  color: #0d6efd;
-  cursor: default;
-}
-
-.post-read {
-  font-weight: 400;
-  color: #6c757d;
-  cursor: default;
-}
-
-.post-title:hover {
-  color: #0a58ca;
-}
-
 .post-link {
   color: #0d6efd !important;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .post-link:hover {
   text-decoration: underline;
 }
 
-.fw-bold {
-  font-weight: 700;
+.post-unread {
+  font-weight: 700 !important;
+  color: #0d6efd !important;
 }
 
-.fw-normal {
-  font-weight: 400;
+.post-read {
+  font-weight: 400 !important;
+  color: #6c757d !important;
 }
 
 .post-date {
@@ -242,22 +235,6 @@ footer {
   background-color: #0b5ed7;
 }
 
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.footer-link {
-  color: #6c757d;
-  text-decoration: none;
-}
-
-.footer-link:hover {
-  color: #0d6efd;
-  text-decoration: underline;
-}
-
 .footer-hexlet-link {
   color: #0d6efd !important;
   text-decoration: none;
@@ -266,4 +243,9 @@ footer {
 .footer-hexlet-link:hover {
   text-decoration: underline;
   color: #0a58ca !important;
+}
+
+/* Футер внизу страницы - последний контейнер прижимается к низу */
+.container:last-of-type {
+  margin-top: auto;
 }
