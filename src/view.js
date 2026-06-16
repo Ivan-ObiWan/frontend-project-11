@@ -109,7 +109,6 @@ const renderFeeds = () => {
   state.feeds.forEach(feed => {
     const feedCard = document.createElement('div');
     feedCard.className = 'feed-item';
-    const translatedTitle = translateTitle(feed.title);
     const translatedDesc = translateDescription(feed.description);
     // Для теста принудительно используем "Новые уроки на Хекслете"
     const testTitle = 'Новые уроки на Хекслете';
