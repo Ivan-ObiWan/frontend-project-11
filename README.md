@@ -4,7 +4,7 @@
 
 [![Actions Status](https://github.com/Ivan-ObiWan/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Ivan-ObiWan/frontend-project-11/actions)
 
-[![CI](https://github.com/Ivan-ObilWan/frontend-project-11/actions/workflows/ci.yml/badge.svg)](https://github.com/Ivan-ObilWan/frontend-project-11/actions/workflows/ci.yml)
+[![CI](https://github.com/Ivan-ObilWan/frontend-project-11/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/Ivan-ObilWan/frontend-project-11/actions/workflows/ci.yml)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Ivan-ObiWan_frontend-project-11&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Ivan-ObiWan_frontend-project-11)
 
