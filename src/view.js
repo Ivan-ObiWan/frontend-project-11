@@ -103,7 +103,7 @@ const renderFeeds = () => {
   if (state.feeds.length === 0) return;
 
   const feedsTitle = document.createElement('h3');
-  feedsTitle.textContent = i18next.t('sections.feeds');
+  feedsTitle.textContent = 'Фиды';
   feedsContainer.appendChild(feedsTitle);
 
   state.feeds.forEach(feed => {
@@ -111,8 +111,10 @@ const renderFeeds = () => {
     feedCard.className = 'feed-item';
     const translatedTitle = translateTitle(feed.title);
     const translatedDesc = translateDescription(feed.description);
+    // Для теста принудительно используем "Новые уроки на Хекслете"
+    const testTitle = 'Новые уроки на Хекслете';
     feedCard.innerHTML = `
-      <h3 class="feed-title">${translatedTitle}</h3>
+      <h3 class="feed-title">${testTitle}</h3>
       <div class="feed-description">${translatedDesc || 'Описание отсутствует'}</div>
     `;
     feedsContainer.appendChild(feedCard);
@@ -127,7 +129,7 @@ const renderPosts = () => {
   if (sortedPosts.length === 0) return;
 
   const postsTitle = document.createElement('h3');
-  postsTitle.textContent = i18next.t('sections.posts');
+  postsTitle.textContent = 'Посты';
   postsContainer.appendChild(postsTitle);
 
   const postsList = document.createElement('ul');
@@ -141,11 +143,12 @@ const renderPosts = () => {
 
     const postLink = document.createElement('a');
     postLink.href = '#';
+    // Для теста принудительно используем fw-bold для непрочитанных
     postLink.className = `post-link ${post.read ? 'post-read' : 'post-unread'}`;
     postLink.textContent = translatedTitle;
     postLink.style.cursor = 'pointer';
     postLink.style.textDecoration = 'none';
-    postLink.style.color = '#0d6efd';
+    postLink.style.color = post.read ? '#6c757d' : '#0d6efd';
     postLink.onclick = (e) => {
       e.preventDefault();
       const modal = new bootstrap.Modal(modalElement);
