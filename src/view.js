@@ -1,3 +1,4 @@
+/* global bootstrap */
 import i18next from 'i18next';
 import state, { getAllPostsSorted, markPostAsRead } from './state.js';
 import { validateUrl } from './validator.js';
