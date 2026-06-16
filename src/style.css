@@ -148,6 +148,16 @@ hr {
   color: #6c757d !important;
 }
 
+.link-secondary {
+  color: #6c757d !important;
+  font-weight: 400 !important;
+  text-decoration: none;
+}
+
+.link-secondary:hover {
+  text-decoration: underline;
+}
+
 .post-date {
   font-size: 0.75rem;
   color: #6c757d;

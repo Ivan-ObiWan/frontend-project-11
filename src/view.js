@@ -140,7 +140,7 @@ const renderPosts = () => {
 
     const postLink = document.createElement('a');
     postLink.href = '#';
-    postLink.className = `post-link ${post.read ? 'fw-normal' : 'fw-bold'}`;
+    postLink.className = `post-link ${post.read ? 'fw-normal link-secondary' : 'fw-bold'}`;
     postLink.textContent = translatedTitle;
     postLink.style.cursor = 'pointer';
     postLink.style.textDecoration = 'none';
