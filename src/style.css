@@ -1,17 +1,5 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
-html, body {
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
-
 .hero-section {
   background-color: #343a40;
   padding: 3rem 0;
@@ -68,13 +56,6 @@ body {
 hr {
   border-top: 1px solid #dee2e6;
   margin: 1.5rem 0;
-}
-
-footer {
-  font-size: 0.875rem;
-  color: #6c757d;
-  padding: 1rem 0;
-  text-align: center;
 }
 
 .is-invalid {
@@ -149,7 +130,6 @@ footer {
 }
 
 .post-link {
-  color: #0d6efd !important;
   text-decoration: none;
   cursor: pointer;
 }
@@ -158,12 +138,12 @@ footer {
   text-decoration: underline;
 }
 
-.post-unread {
+.fw-bold {
   font-weight: 700 !important;
   color: #0d6efd !important;
 }
 
-.post-read {
+.fw-normal {
   font-weight: 400 !important;
   color: #6c757d !important;
 }
@@ -245,7 +225,26 @@ footer {
   color: #0a58ca !important;
 }
 
-/* Футер внизу страницы - последний контейнер прижимается к низу */
-.container:last-of-type {
+/* Футер внизу */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+}
+
+footer {
   margin-top: auto;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6c757d;
+  padding: 1rem 0;
 }

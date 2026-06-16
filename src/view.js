@@ -15,7 +15,6 @@ const heroTitle = document.querySelector('.hero-section h1');
 const heroLead = document.querySelector('.hero-section .lead');
 const submitButton = document.querySelector('button[type="submit"]');
 const formText = document.querySelector('.form-text');
-const footer = document.getElementById('footer');
 
 let updateTimeout = null;
 
@@ -109,11 +108,10 @@ const renderFeeds = () => {
   state.feeds.forEach(feed => {
     const feedCard = document.createElement('div');
     feedCard.className = 'feed-item';
+    const translatedTitle = translateTitle(feed.title);
     const translatedDesc = translateDescription(feed.description);
-    // Для теста принудительно используем "Новые уроки на Хекслете"
-    const testTitle = 'Новые уроки на Хекслете';
     feedCard.innerHTML = `
-      <h3 class="feed-title">${testTitle}</h3>
+      <h3 class="feed-title">${translatedTitle}</h3>
       <div class="feed-description">${translatedDesc || 'Описание отсутствует'}</div>
     `;
     feedsContainer.appendChild(feedCard);
@@ -142,8 +140,7 @@ const renderPosts = () => {
 
     const postLink = document.createElement('a');
     postLink.href = '#';
-    // Для теста принудительно используем fw-bold для непрочитанных
-    postLink.className = `post-link ${post.read ? 'post-read' : 'post-unread'}`;
+    postLink.className = `post-link ${post.read ? 'fw-normal' : 'fw-bold'}`;
     postLink.textContent = translatedTitle;
     postLink.style.cursor = 'pointer';
     postLink.style.textDecoration = 'none';
@@ -180,10 +177,6 @@ const updateUILocales = () => {
   if (submitButton) submitButton.textContent = i18next.t('form.button');
   if (formText) formText.textContent = i18next.t('form.example');
   if (urlInput) urlInput.placeholder = 'Ссылка RSS';
-
-  if (footer) {
-    footer.innerHTML = `${i18next.t('footer.text')}<a href="${i18next.t('footer.link')}" target="_blank" rel="noopener noreferrer" class="footer-hexlet-link">${i18next.t('footer.linkText')}</a>`;
-  }
 
   const closeBtn = document.querySelector('#postModal .btn-secondary');
   if (closeBtn) closeBtn.textContent = i18next.t('modal.close');
@@ -357,7 +350,6 @@ const initApp = () => {
       heroLead.textContent = 'Начните читать RSS сегодня! Это легко, это красиво.';
       submitButton.textContent = 'Добавить';
       formText.textContent = 'Пример: https://lorem-rss.hexlet.app/feed';
-      if (footer) footer.innerHTML = 'created by <a href="https://hexlet.io" target="_blank" style="color: #0d6efd; text-decoration: none;">Hexlet</a>';
       urlInput.placeholder = 'Ссылка RSS';
       form.addEventListener('submit', handleSubmit);
       urlInput.focus();
